@@ -1,14 +1,16 @@
 const Cover = require("../models/coverModel");
 const ApiFeatures = require("../utils/api-features");
 
-const add = (req,res)=>{
-    Cover.create(req.body);
+const add = async (req,res)=>{
+    await Cover.create(req.body);
     res.send({"success":"true"});
 }
 
-const getById = (req,res)=>{
+const getById =async (req,res)=>{
+    
     const id = req.params.id;
-    const cover = Cover.findById(id);
+    console.log("/"+id);
+    const cover = await Cover.findOne({"id":id});
     res.send(cover);
 }
 

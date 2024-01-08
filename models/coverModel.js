@@ -12,7 +12,7 @@ const coverModelSchema = mongoose.Schema({
       type: "String",
     },
     volume: {
-      type: "Date",
+      type: "String",
     },
     fileName: {
       type: "String",
