@@ -1,0 +1,11 @@
+{
+    "port": "8959",
+    "mongo": {
+        "atlas" : {
+            "user": "mangaflix001",
+            "password" : "be8ICSItLMufS1KN",
+            "cluster" : "mangaflix-free.vpomzxw.mongodb.net",
+            "database" : ""
+        }
+    }
+}
