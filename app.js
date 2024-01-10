@@ -37,6 +37,7 @@ const roleRouter = require("./routes/roleRouter");
 const memberRouter = require("./routes/memberRouter");
 const mangaRouter = require("./routes/mangaRouter");
 const coverRouter = require("./routes/coverRouter");
+const converterRouter = require("./routes/converterRouter");
 
 //routing the paths to route imports
 app.use("/v1/auth", userRouter);
@@ -45,6 +46,7 @@ app.use("/v1/member", memberRouter);
 app.use("/v1/community", communityRouter);
 app.use("/v1/manga", mangaRouter);
 app.use("/v1/cover", coverRouter);
+app.use("/v1/convert", converterRouter);
 app.use(errorHandlerMiddleware);
 app.use(notFound);
 
