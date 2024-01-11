@@ -75,9 +75,6 @@ const mangaConversion = (req, res) => {
   outputJson.views = inputJson.views?.type || 0;
   outputJson.rating = inputJson.rating?.type || 0;
   outputJson.follows = inputJson.follows?.type || 0;
-  outputJson.poster.main = inputJson.attributes.links?.al || "";
-  outputJson.poster.optimized = inputJson.attributes.links?.ap || "";
-  outputJson.poster.cdnUrl = inputJson.attributes.links?.kt || "";
   outputJson.Slug = inputJson.attributes.links?.mu || "";
   outputJson.postAt = "now";
   var poster_id = inputJson.relationships
