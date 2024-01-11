@@ -80,10 +80,10 @@ const mangaConversion = (req, res) => {
   outputJson.poster.cdnUrl = inputJson.attributes.links?.kt || "";
   outputJson.Slug = inputJson.attributes.links?.mu || "";
   outputJson.postAt = "now";
-  var poster_id = imputJson.inputJson.relationships
+  var poster_id = inputJson.inputJson.relationships
   .filter((relation) => relation.type === "poster")
   .map((poster) => poster.id);
-  var poster_link = imputJson.inputJson.relationships
+  var poster_link = inputJson.inputJson.relationships
   .filter((relation) => relation.type === "poster")
   .map((poster) => poster.attributes.fileName);
   var poster_uri = `https://uploads.mangadex.org/covers/${poster_id}/${poster_link}`;
