@@ -51,7 +51,7 @@ app.use(errorHandlerMiddleware);
 app.use(notFound);
 
 //initializing server port
-const port = process.env.PORT || 3000;
+const port = config.get("port");
 
 //starting the server and connecting to db
 const start = async () => {

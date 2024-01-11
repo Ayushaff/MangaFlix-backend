@@ -104,6 +104,9 @@ const mangaModelSchema=mongoose.Schema({
   },
   "Slug": {
     "type": "String"
+  },
+  "postAt" :{
+    "type":"String"
   }
 });
 

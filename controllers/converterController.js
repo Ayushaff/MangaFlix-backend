@@ -36,22 +36,26 @@ const mangaConversion = (req, res) => {
       cdnUrl: "",
     },
     Slug: "",
+    poster : {
+      original : "",
+      thumb : ""
+    }
   };
   outputJson.id = uuidv4();
   outputJson.mdex_id = inputJson.id;
   outputJson.title = inputJson.attributes.title.en;
-  outputJson.altTitles.en = inputJson.attributes.altTitles.en
+  outputJson.altTitles = inputJson.attributes.altTitles
   outputJson.description.en = inputJson.attributes.description?.en || "";
   outputJson.isLocked = inputJson.attributes.isLocked || false;
   outputJson.originalLanguage = inputJson.attributes.originalLanguage || "";
   outputJson.lastVolume = inputJson.attributes.lastVolume || "";
   outputJson.lastChapter = inputJson.attributes.lastChapter || "";
-  outputJson.publicationDemographic = inputJson.attributes.publicationDemographic || null;
+  outputJson.genre.push(inputJson.attributes.publicationDemographic || null);
   outputJson.status = inputJson.attributes.status || "";
   outputJson.year = inputJson.attributes.year || "";
   outputJson.contentRating = inputJson.attributes.contentRating || "";
   outputJson.genre = inputJson.attributes.tags
-    .filter((tag) => tag.type === "tag" && tag.attributes.group === "genre")
+    .filter((tag) => tag.type === "tag" && (tag.attributes.group === "genre"||tag.attributes.group === "theme"||tag.attributes.group === "format"))
     .map((tag) => tag.attributes.name.en);
   outputJson.author = inputJson.relationships
     .filter((relation) => relation.type === "author")
@@ -66,9 +70,7 @@ const mangaConversion = (req, res) => {
   outputJson.createdAt = inputJson.attributes.createdAt || "";
   outputJson.updatedAt = inputJson.attributes.updatedAt || "";
   outputJson.latestUploadedChapter = [inputJson.attributes.latestUploadedChapter];
-  outputJson.relationship = inputJson.relationships.map((relation) => {
-    return { id: relation.id, type: relation.type, related: relation.related || null };
-  });
+  outputJson.relationship = [];//will add
   outputJson.type = inputJson.type;
   outputJson.views = inputJson.views?.type || 0;
   outputJson.rating = inputJson.rating?.type || 0;
@@ -77,7 +79,17 @@ const mangaConversion = (req, res) => {
   outputJson.poster.optimized = inputJson.attributes.links?.ap || "";
   outputJson.poster.cdnUrl = inputJson.attributes.links?.kt || "";
   outputJson.Slug = inputJson.attributes.links?.mu || "";
+  outputJson.postAt = "now";
+  var poster_id = imputJson.inputJson.relationships
+  .filter((relation) => relation.type === "poster")
+  .map((poster) => poster.id);
+  var poster_link = imputJson.inputJson.relationships
+  .filter((relation) => relation.type === "poster")
+  .map((poster) => poster.attributes.fileName);
+  var poster_uri = `https://uploads.mangadex.org/covers/${poster_id}/${poster_link}`;
+  outputJson.poster.original = poster_uri;
 
+  
   res.send({
     "output": outputJson,
   });
