@@ -35,7 +35,7 @@ const mangaConversion = (req, res) => {
       optimized: "",
       cdnUrl: "",
     },
-    Slug: "",
+    slug: "",
     poster : {
       original : "",
       thumb : ""
@@ -75,7 +75,7 @@ const mangaConversion = (req, res) => {
   outputJson.views = inputJson.views?.type || 0;
   outputJson.rating = inputJson.rating?.type || 0;
   outputJson.follows = inputJson.follows?.type || 0;
-  outputJson.Slug = inputJson.attributes.links?.mu || "";
+  outputJson.slug = inputJson.attributes.links?.mu || "";
   outputJson.postAt = "now";
   var poster_id = inputJson.relationships
   .filter((relation) => relation.type === "cover_art")
