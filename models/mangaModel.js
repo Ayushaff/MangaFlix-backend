@@ -76,7 +76,7 @@ const mangaModelSchema=mongoose.Schema({
   "latestUploadedChapter": {
     "type": "Array"
   },
-  "relationship": {
+  "relationships": {
     "type": "Array"
   },
   "type": {
@@ -92,15 +92,12 @@ const mangaModelSchema=mongoose.Schema({
     "type": "Number"
   },
   "poster": {
-    "main": {
+    "original": {
       "type": "String"
     },
-    "optimized": {
+    "thumb": {
       "type": "String"
     },
-    "cdnUrl": {
-      "type": "String"
-    }
   },
   "Slug": {
     "type": "String"

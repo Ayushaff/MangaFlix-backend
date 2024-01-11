@@ -25,7 +25,7 @@ const mangaConversion = (req, res) => {
     createdAt: "",
     updatedAt: "",
     latestUploadedChapter: [],
-    relationship: [],
+    relationships: [],
     type: "",
     views: 0,
     rating: 0,
@@ -70,7 +70,7 @@ const mangaConversion = (req, res) => {
   outputJson.createdAt = inputJson.attributes.createdAt || "";
   outputJson.updatedAt = inputJson.attributes.updatedAt || "";
   outputJson.latestUploadedChapter = [inputJson.attributes.latestUploadedChapter];
-  outputJson.relationship = [];//will add
+  outputJson.relationships = [];//will add
   outputJson.type = inputJson.type;
   outputJson.views = inputJson.views?.type || 0;
   outputJson.rating = inputJson.rating?.type || 0;
@@ -80,10 +80,10 @@ const mangaConversion = (req, res) => {
   outputJson.poster.cdnUrl = inputJson.attributes.links?.kt || "";
   outputJson.Slug = inputJson.attributes.links?.mu || "";
   outputJson.postAt = "now";
-  var poster_id = inputJson.inputJson.relationships
+  var poster_id = inputJson.relationships
   .filter((relation) => relation.type === "poster")
   .map((poster) => poster.id);
-  var poster_link = inputJson.inputJson.relationships
+  var poster_link = inputJson.relationships
   .filter((relation) => relation.type === "poster")
   .map((poster) => poster.attributes.fileName);
   var poster_uri = `https://uploads.mangadex.org/covers/${poster_id}/${poster_link}`;
@@ -95,6 +95,51 @@ const mangaConversion = (req, res) => {
   });
 };
 
+const chapterConversion = (req,res)=>{
+  var outputJson = {
+    id: "",
+    mangaId: "",
+    mdex_id : "",
+    title: "",
+    volume: 0,
+    chapterNumber: "",
+    summary: "",
+    language: "",
+    pages: [
+      
+    ],
+    pageCount: 0,
+    version: 0,
+    publishedAt: "",
+    createdAt: "",
+    updatedAt: "",
+    isActive: false,
+    relationships: [
+      
+    ],
+  };
+  
+}
+
+
 module.exports = {
   mangaConversion,
 };
+
+// page reference --> (context of chapter)
+
+// {
+//   pageNumber: 0,
+//   urls: {
+//     server1: "",
+//     server2: "",
+//     server3: "",
+//     server4: "",
+//   },
+// },
+
+// {
+//   user_id: "",
+//   method: "",
+//   from: "",
+// },
