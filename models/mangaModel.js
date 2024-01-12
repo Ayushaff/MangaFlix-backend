@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-var URLSlug = require("mongoose-slug-generator");
-mongoose.plugin(URLSlug);
 
 const mangaModelSchema = mongoose.Schema({
   id: {
@@ -95,7 +93,6 @@ const mangaModelSchema = mongoose.Schema({
   },
   slug: {
     type: String,
-    slug: "title.en",
   },
   postAt: {
     type: "String",
