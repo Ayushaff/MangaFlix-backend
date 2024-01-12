@@ -100,18 +100,23 @@ const mangaConversion = async (req, res) => {
         sharp('controllers/temp/tempfile.jpg')
           .webp()
           .resize(200, 300)
-          .toFile('controllers/temp/outputfile.webp', (err, info) => {
+          .toFile('controllers/temp/outputfile.webp',async (err, info) => {
             if (err) {
               console.error(err);
             } else {
               // console.log(info);
-              const contabo_resp=contaboAPI(outputJson.id, "webp", "thumb", "controllers/temp/outputfile.webp");
+              var contabo_resp = await contaboAPI(outputJson.id, "jpeg", "poster", "controllers/temp/tempfile.jpg");
               if (contabo_resp.status == 200) {
+                console.log("jpg poster placed");
+              } else {
+                console.log("jpg poster error");
+              }
+              var contabo_resp2 = await contaboAPI(outputJson.id, "webp", "thumb", "controllers/temp/outputfile.webp");
+              if (contabo_resp2.status == 200) {
                 console.log("webp thumb placed");
               } else {
-                
-              }
 
+              }
             }
           });
       })
@@ -120,12 +125,6 @@ const mangaConversion = async (req, res) => {
       });
   };
   scrap_poster(poster_uri, destination);
-  var contabo_resp = await contaboAPI(outputJson.id, "jpeg", "poster", "controllers/temp/tempfile.jpg");
-  if (contabo_resp.status == 200) {
-    //console.log("jpg poster placed");
-  } else {
-    console.log("jpg poster error");
-  }
   outputJson.poster.original = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${outputJson.id}/poster/${outputJson.id}.jpg`;
   outputJson.poster.thumb = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${outputJson.id}/thumb/${outputJson.id}.jpg`;
   res.send(outputJson);
@@ -141,7 +140,7 @@ const contaboAPI = async (mangaName, mime, route, directory) => {
     const headers = {
       'Content-Type': `image/${mime}`,
     };
-    
+
     const signedRequest = aws4.sign(
       {
         host: url.split('/')[2],
@@ -153,11 +152,11 @@ const contaboAPI = async (mangaName, mime, route, directory) => {
       },
       { accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY }
     );
-    
+
     response = await axios.put(url, imageBuffer, {
       headers: signedRequest.headers,
     });
-    
+
     return response;
   } catch (err) {
     console.log("contabo error : " + err);
