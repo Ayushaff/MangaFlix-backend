@@ -2,6 +2,10 @@ const { v4: uuidv4 } = require('uuid');
 const request = require('request');
 const fs = require('fs');
 const sharp = require('sharp');
+const axios = require('axios');
+const AWS = require('aws-sdk');
+const config = require('config');
+
 
 const mangaConversion = async (req, res) => {
   const inputJson = req.body;
@@ -96,27 +100,46 @@ const mangaConversion = async (req, res) => {
       .pipe(fs.createWriteStream(destination))
       .on("close", () => {
         console.log("Image downloaded successfully!");
+        sharp('controllers/temp/tempfile.jpg')
+        .webp()
+          .resize(200, 300)
+          .toFile('controllers/temp/outputfile.webp', (err, info) => {
+            if (err) {
+              console.error(err);
+            } else {
+              console.log(info);
+            }
+          });
       })
       .on("error", (err) => {
         console.error("Error downloading the image:", err);
       });
   };
   scrap_poster(poster_uri, destination);
-  const sharp = require('sharp');
-  sharp('controllers/temp/tempfile.jpg')
-    .resize(200, 300)
-    .toFile('controllers/temp/outputfile.jpg', (err, info) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(info);
-      }
-    });
+  
+
+
+
   outputJson.poster.original = poster_uri;
-
-
   res.send(outputJson);
 };
+
+const contaboAPI = async (mangaName)=>{
+  try{
+    const imageBuffer = fs.readFileSync("controllers/temp/tempfile.jpg");
+    var {ACCESS_KEY,SECRET_KEY} = config.get("awsSignature");
+    AWS.config.update({
+      accessKeyId: ACCESS_KEY,
+      secretAccessKey: SECRET_KEY,
+    });
+    const url = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${magaName}/poster/${magaName}.jpg`;
+    const response = await axios.put(url,data);
+  }catch(err){
+    console.log("contabo error : "+err);
+  }
+}
+
+
 
 const chapterConversion = (req, res) => {
   var outputJson = {

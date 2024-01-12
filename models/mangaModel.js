@@ -7,6 +7,9 @@ const mangaModelSchema = mongoose.Schema({
   mdex_id: {
     type: "String",
   },
+  state : {
+    type : "String",
+  },
   title: {
     en: {
       type: "String",

@@ -12,6 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@img/sharp-linux-x64": "^0.33.1",
+    "aws-sdk": "^2.1534.0",
+    "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "chai": "^4.3.7",
     "config": "^3.3.10",
