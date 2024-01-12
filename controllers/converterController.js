@@ -3,8 +3,9 @@ const request = require('request');
 const fs = require('fs');
 const sharp = require('sharp');
 const axios = require('axios');
-const AWS = require('aws-sdk');
 const config = require('config');
+const aws4 = require('aws4');
+const { response } = require('express');
 
 
 const mangaConversion = async (req, res) => {
@@ -86,28 +87,31 @@ const mangaConversion = async (req, res) => {
   outputJson.postAt = "now";
 
 
-  var poster_id = inputJson.relationships
-    .filter((relation) => relation.type === "cover_art")
-    .map((poster) => poster.id);
   var poster_link = inputJson.relationships
     .filter((relation) => relation.type === "cover_art")
     .map((poster) => poster.attributes.fileName);
   var poster_uri = `https://uploads.mangadex.org/covers/${outputJson.mdex_id}/${poster_link}`;
-  console.log(poster_uri);
+
   var destination = `controllers/temp/tempfile.jpg`;
-  var scrap_poster = function downloadImage(url, destination) {
+  var scrap_poster = (url, destination) => {
     request(url)
       .pipe(fs.createWriteStream(destination))
       .on("close", () => {
-        console.log("Image downloaded successfully!");
         sharp('controllers/temp/tempfile.jpg')
-        .webp()
+          .webp()
           .resize(200, 300)
           .toFile('controllers/temp/outputfile.webp', (err, info) => {
             if (err) {
               console.error(err);
             } else {
-              console.log(info);
+              // console.log(info);
+              const contabo_resp=contaboAPI(outputJson.id, "webp", "thumb", "controllers/temp/outputfile.webp");
+              if (contabo_resp.status == 200) {
+                console.log("webp thumb placed");
+              } else {
+                
+              }
+
             }
           });
       })
@@ -116,26 +120,48 @@ const mangaConversion = async (req, res) => {
       });
   };
   scrap_poster(poster_uri, destination);
-  
-
-
-
-  outputJson.poster.original = poster_uri;
+  var contabo_resp = await contaboAPI(outputJson.id, "jpeg", "poster", "controllers/temp/tempfile.jpg");
+  if (contabo_resp.status == 200) {
+    //console.log("jpg poster placed");
+  } else {
+    console.log("jpg poster error");
+  }
+  outputJson.poster.original = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${outputJson.id}/poster/${outputJson.id}.jpg`;
+  outputJson.poster.thumb = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${outputJson.id}/thumb/${outputJson.id}.jpg`;
   res.send(outputJson);
 };
 
-const contaboAPI = async (mangaName)=>{
-  try{
-    const imageBuffer = fs.readFileSync("controllers/temp/tempfile.jpg");
-    var {ACCESS_KEY,SECRET_KEY} = config.get("awsSignature");
-    AWS.config.update({
-      accessKeyId: ACCESS_KEY,
-      secretAccessKey: SECRET_KEY,
+//api to post images to contabo manga bucket
+const contaboAPI = async (mangaName, mime, route, directory) => {
+  var response;
+  try {
+    const url = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${mangaName}/${route}/${mangaName}.${mime}`;
+    const imageBuffer = fs.readFileSync(`${directory}`);
+    var { ACCESS_KEY, SECRET_KEY } = config.get("awsSignature");
+    const headers = {
+      'Content-Type': `image/${mime}`,
+    };
+    
+    const signedRequest = aws4.sign(
+      {
+        host: url.split('/')[2],
+        method: 'PUT',
+        path: `/${url.split('://')[1].split('/').slice(1).join('/')}`,
+        headers,
+        service: 's3',
+        body: imageBuffer,
+      },
+      { accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY }
+    );
+    
+    response = await axios.put(url, imageBuffer, {
+      headers: signedRequest.headers,
     });
-    const url = `https://eu2.contabostorage.com/07430bd7553b41ab8e21fb8ab9438054:manga/${magaName}/poster/${magaName}.jpg`;
-    const response = await axios.put(url,data);
-  }catch(err){
-    console.log("contabo error : "+err);
+    
+    return response;
+  } catch (err) {
+    console.log("contabo error : " + err);
+    return response;
   }
 }
 
