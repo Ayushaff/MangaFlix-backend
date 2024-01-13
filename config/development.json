@@ -11,5 +11,8 @@
     "awsSignature": {
         "ACCESS_KEY" : "0bd5929a8454b69dfd3a1b5e45655ef7",
         "SECRET_KEY" : "5a457bc816e1791424e64cfc0c1fc132"
-    }
+    },
+    "COOKIE_LIFETIME" : 2592000,
+    "JWT_SECRET_KEY": "JWT",
+    "JWT_LIFETIME": 2592000
 }

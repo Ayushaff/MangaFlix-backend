@@ -2,6 +2,8 @@ const { Unauthorized } = require("../errors");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Role = require('../models/roleModel');
+const config = require('config');
+
 
 const authMiddleware = async (req, res, next) => {
   const { access_token } = req.cookies;
@@ -10,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
       `No token to access this route , please sign in to access`
     );
   }
-  const decodedData = jwt.verify(access_token, process.env.JWT_SECRET_KEY);
+  const decodedData = jwt.verify(access_token, config.get("JWT_SECRET_KEY"));
   req.user = await User.findById(decodedData.id);
   next();
 };
