@@ -13,8 +13,9 @@ const {
 } = require("../middleware/authentication");
 
 //routing the paths to controllers
-router.route('/signin').post(signInUser);//login
+router.route('/signin').post(authMiddleware,signInUser);//login
 router.route('/signup').post(signUpUser);
+router.route('/user/:id').get(showUser);
 router.route('/me').get(authMiddleware, showUser);
 
 //exports

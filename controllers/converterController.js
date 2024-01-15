@@ -53,6 +53,7 @@ const mangaConversion = async (req, res) => {
   outputJson.id = uuidv4();
   outputJson.mdex_id = inputJson.id;
   outputJson.title.en = inputJson.attributes.title.en;
+  outputJson.title.jp = inputJson.attributes.title.jp;
   outputJson.altTitles = inputJson.attributes.altTitles
   outputJson.description.en = inputJson.attributes.description?.en || "";
   outputJson.isLocked = inputJson.attributes.isLocked || false;

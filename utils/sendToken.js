@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const config = require('config');
+const { StatusCodes } = require('http-status-codes');
 
 const sendToken = (user, statusCode, res) => {
   try {
@@ -26,7 +27,13 @@ const sendToken = (user, statusCode, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      content: {
+        error: error
+        
+      }
+    });
   }
 };
 

@@ -8,6 +8,9 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const morgan = require('morgan');
+
+app.use(morgan('dev'))
 
 //Handling uncaught exceptions
 process.on("uncaughtException", (err) => {
