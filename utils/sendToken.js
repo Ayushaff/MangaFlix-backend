@@ -1,16 +1,21 @@
 const _ = require('lodash');
+const config = require('config');
+const { StatusCodes } = require('http-status-codes');
+
 const sendToken = (user, statusCode, res) => {
+  try {
     const access_token = user.createJWT();
-  
+
     //options for cookies
+    const cookieLifetime = config.get("COOKIE_LIFETIME");
     const options = {
       httpOnly: true,
       expires: new Date(
-        Date.now() + process.env.COOKIE_LIFETIME * 24 * 60 * 60 * 1000
+        Date.now() + cookieLifetime * 24 * 60 * 60 * 1000
       ),
     };
     const data = _.omit(user.toObject(), 'password');
-  
+
     //creates a cookie
     res.status(statusCode).cookie("access_token", access_token, options).json({
       status: true,
@@ -21,7 +26,15 @@ const sendToken = (user, statusCode, res) => {
         }
       }
     });
-  };
-  
-  module.exports = sendToken;
-  
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      content: {
+        error: error
+        
+      }
+    });
+  }
+};
+
+module.exports = sendToken;

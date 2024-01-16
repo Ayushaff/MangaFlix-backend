@@ -6,7 +6,7 @@ const RoleSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: [2, 'Must be greater than 2'],
-        enum: ['Community Admin', 'Community MOderator', 'Community Member']
+        enum: ['ADMIN', 'MOD','USER']
     }
 }, {
     timestamps: true,
