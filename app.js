@@ -38,6 +38,7 @@ const memberRouter = require("./routes/memberRouter");
 const mangaRouter = require("./routes/mangaRouter");
 const coverRouter = require("./routes/coverRouter");
 const converterRouter = require("./routes/converterRouter");
+const fileRoutes = require('./routes/fileRoutes');
 
 //routing the paths to route imports
 app.use("/v1/auth", userRouter);
