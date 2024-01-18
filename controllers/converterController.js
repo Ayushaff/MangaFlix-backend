@@ -41,14 +41,10 @@ const mangaConversion = async (req, res) => {
     rating: 0,
     follows: 0,
     poster: {
-      main: "",
-      optimized: "",
-      cdnUrl: "",
-    },
-    poster: {
       original: "",
       thumb: ""
-    }
+    },
+    slug : ""
   };
   outputJson.id = uuidv4();
   outputJson.mdex_id = inputJson.id;
@@ -86,7 +82,12 @@ const mangaConversion = async (req, res) => {
   outputJson.rating = inputJson.rating?.type || 0;
   outputJson.follows = inputJson.follows?.type || 0;
   outputJson.postAt = "now";
-
+  outputJson.slug = outputJson.title.en
+  .toLowerCase()
+  .trim()
+  .replace(/[^\w\s-]/g, '')
+  .replace(/[\s_-]+/g, '-')
+  .replace(/^-+|-+$/g, '');
 
   var poster_link = inputJson.relationships
     .filter((relation) => relation.type === "cover_art")

@@ -9,7 +9,10 @@ const app = express();
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(morgan('dev'))
 
 //Handling uncaught exceptions
@@ -41,6 +44,7 @@ const memberRouter = require("./routes/memberRouter");
 const mangaRouter = require("./routes/mangaRouter");
 const coverRouter = require("./routes/coverRouter");
 const converterRouter = require("./routes/converterRouter");
+const genreRouter = require("./routes/genreRouter.js");
 
 //routing the paths to route imports
 app.use("/v1/auth", userRouter);
@@ -50,6 +54,7 @@ app.use("/v1/community", communityRouter);
 app.use("/v1/manga", mangaRouter);
 app.use("/v1/cover", coverRouter);
 app.use("/v1/convert", converterRouter);
+app.use("/v1/genre", genreRouter);
 app.use(errorHandlerMiddleware);
 app.use(notFound);
 

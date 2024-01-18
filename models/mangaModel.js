@@ -10,6 +10,9 @@ const mangaModelSchema = mongoose.Schema({
   state : {
     type : "String",
   },
+  badge : {
+    type : "String",
+  },
   title: {
     en: {
       type: "String",
@@ -57,7 +60,7 @@ const mangaModelSchema = mongoose.Schema({
     type: ["String"],
   },
   keywords: {
-    type: "Array",
+    type: ["String"],
   },
   chapterNumbersResetOnNewVolume: {
     type: "Boolean",
@@ -69,7 +72,7 @@ const mangaModelSchema = mongoose.Schema({
     type: "String",
   },
   latestUploadedChapter: {
-    type: "Array",
+    type: "String",
   },
   relationships: {
     type: "Array",
