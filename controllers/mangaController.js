@@ -9,8 +9,29 @@ const sharp = require('sharp');
 const axios = require('axios')
 
 const getAll = async (req, res) => {
-  var mangaList = await Manga.find({});
-  res.send(mangaList);
+  try {
+    console.log(req.query);
+    const pageSize = req.query.limit;
+    const apifeatures = new ApiFeatures(Manga.find(), req.query)
+      .pagination(pageSize);
+    let mangas = await apifeatures.query.lean();
+    console.log(mangas);
+    res.status(StatusCodes.OK).json({
+      status: true,
+      content: {
+        data: mangas
+      }
+    });
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      status: false,
+      content: {
+        error : error,
+      }
+    });
+  }
+
+
 }
 
 
@@ -22,8 +43,8 @@ const addManga = async (req, res) => {
     var outputJson = {
       id: "",
       mdex_id: "",
-      state : "",
-      badge : "",
+      state: "",
+      badge: "",
       title: {
         en: "",
         jp: "",

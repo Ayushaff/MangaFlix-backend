@@ -31,6 +31,7 @@ const addGenre = async (req, res) => {
 
 const getAllGenre = async (req, res) => {
     try {
+        console.log(req.query);
         const data = await Genre.find();
         res.status(StatusCodes.OK).json({
             status: true,
