@@ -3,13 +3,8 @@ var URLSlug = require("mongoose-slug-generator");
 
 
 const pageSchema = new mongoose.Schema({
-  pageNumber: { type: Number },
-  urls: {
-    server1: { type: String },
-    server2: { type: String },
-    server3: { type: String },
-    server4: { type: String },
-  },
+  server1: { type: [String] },
+  server2: { type: [String] },
 });
 
 const relationshipSchema = new mongoose.Schema({

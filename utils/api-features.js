@@ -17,7 +17,7 @@ class APIFeatures {
             this.query = this.query.skip(skip).limit(numberOfItemsPerPage);
             return this;
         } catch (error) {
-            console.log("error : ",error);
+            //console.log("error : ",error);
             throw Error({ msg: error })
         }
     }

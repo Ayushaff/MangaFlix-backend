@@ -28,7 +28,8 @@ const UserSchema = new mongoose.Schema({
   role:{
     type: mongoose.Schema.ObjectId,
     ref: "Role",
-    select: false
+    select: false,
+    required : [true, "Please mention role of the user."]
   }
 }, {
   timestamps: true,

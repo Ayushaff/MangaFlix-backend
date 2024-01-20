@@ -18,6 +18,9 @@ const upload = multer({ storage: storage });
 const {
     getAll,
     addManga,
+    deleteManga,
+    getMangaById,
+    updateManga
 } = require('../controllers/mangaController');
 const {
     authMiddleware
@@ -28,6 +31,9 @@ const {
 
 router.route('/').get(getAll);
 router.route('/').post(upload.any(),addManga);
+router.route('/').put(updateManga);
+router.route('/:id').get(getMangaById);
+router.route('/:id').delete(deleteManga);
 
 
 module.exports = router;

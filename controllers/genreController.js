@@ -14,6 +14,7 @@ const addGenre = async (req, res) => {
                 data: {
                     name: data.name,
                     description: data.description,
+                    important : data.important,
                     createdAt: data.createdAt,
                     updatedAt: data.updatedAt,
                 }

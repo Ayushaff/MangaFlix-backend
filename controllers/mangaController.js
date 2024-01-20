@@ -8,6 +8,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const axios = require('axios')
 
+
 const getAll = async (req, res) => {
   try {
     console.log(req.query);
@@ -15,7 +16,7 @@ const getAll = async (req, res) => {
     const apifeatures = new ApiFeatures(Manga.find(), req.query)
       .pagination(pageSize);
     let mangas = await apifeatures.query.lean();
-    console.log(mangas);
+    //console.log(mangas);
     res.status(StatusCodes.OK).json({
       status: true,
       content: {
@@ -26,12 +27,10 @@ const getAll = async (req, res) => {
     res.status(StatusCodes.NOT_FOUND).json({
       status: false,
       content: {
-        error : error,
+        error: error,
       }
     });
   }
-
-
 }
 
 
@@ -111,16 +110,17 @@ const addManga = async (req, res) => {
     outputJson.postAt = inputJson.postAt;
     outputJson.state = inputJson.state;
     outputJson.badge = inputJson.badge;
-    contaboUpload(outputJson.id);
-    const contaboApi = config.get('CONTABO_API');
-    outputJson.poster.original = `${contaboApi}/${outputJson.id}/poster/${outputJson.id}.jpg`;
-    outputJson.poster.thumb = `${contaboApi}/${outputJson.id}/thumb/${outputJson.id}.jpg`;
     outputJson.slug = outputJson.title.en
       .toLowerCase()
       .trim()
       .replace(/[^\w\s-]/g, '')
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
+    contaboUpload(outputJson.id);
+    const contaboApi = config.get('CONTABO_API');
+    outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
+    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.jpg`;
+    
     const manga = await Manga.create(outputJson);
     res.status(StatusCodes.OK).json({
       status: true,
@@ -131,7 +131,7 @@ const addManga = async (req, res) => {
   } catch (error) {
     console.log("---->>>>" + error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      status: true,
+      status: false,
       content: {
         error: error,
       }
@@ -166,10 +166,11 @@ var contaboUpload = (id) => {
         }
       });
   } catch (error) {
-    throw Error({ message: error })
+    throw Error({ message: error });
   }
-
 };
+
+
 const contaboAPI = async (mangaName, mime, route, directory) => {
   const contaboApi = config.get('CONTABO_API');
   var response;
@@ -205,8 +206,78 @@ const contaboAPI = async (mangaName, mime, route, directory) => {
 }
 
 
+const deleteManga = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const response = await Manga.deleteOne({id: id});
+    res.status(StatusCodes.OK).json({
+      status: true,
+      content: {
+        data: response,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      content: {
+        error: error,
+      }
+    });
+  }
+}
+
+
+const updateManga = async (req,res) => {
+  try {
+    const id = req.params.id;
+    
+    res.status(StatusCodes.OK).json({
+      status: true,
+      content: {
+        data: response,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      content: {
+        error: error,
+      }
+    });
+  }
+}
+
+
+const getMangaById = async (req,res)=>{
+  try {
+    const id = req.params.id;
+    const response = Manga.findOne({id:id});
+    console.log(response);
+    res.send({data:response});
+    res.status(StatusCodes.OK).json({
+      status: true,
+      content: {
+        data: response,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      content: {
+        error: error,
+      }
+    });
+  }
+}
+
 
 module.exports = {
   getAll,
   addManga,
+  deleteManga,
+  getMangaById,
+  updateManga
 }
