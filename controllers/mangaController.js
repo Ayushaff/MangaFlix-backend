@@ -11,9 +11,19 @@ const axios = require('axios')
 
 const getAll = async (req, res) => {
   try {
-    console.log(req.query);
     const pageSize = req.query.limit;
-    const apifeatures = new ApiFeatures(Manga.find(), req.query)
+    var query;
+    if(req.query.filter === "PUBLISHED"){
+      query = Manga.find({state : "publish"});
+    }else if(req.query.filter === "DRAFT"){
+      query = Manga.find({state : "draft"});
+    }else if(req.query.filter === "TRASH"){
+      query = Manga.find({state : "trash"});
+    }else{
+      query = Manga.find();
+    }
+
+    const apifeatures = new ApiFeatures(query, req.query)
       .pagination(pageSize);
     let mangas = await apifeatures.query.lean();
     //console.log(mangas);
@@ -34,11 +44,10 @@ const getAll = async (req, res) => {
 }
 
 
-//add manga
+//add manga (POST)
 const addManga = async (req, res) => {
   try {
     const inputJson = req.body;
-    console.log("input json\n", inputJson);
     var outputJson = {
       id: "",
       mdex_id: "",
@@ -120,7 +129,7 @@ const addManga = async (req, res) => {
     const contaboApi = config.get('CONTABO_API');
     outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
     outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.jpg`;
-    
+
     const manga = await Manga.create(outputJson);
     res.status(StatusCodes.OK).json({
       status: true,
@@ -209,7 +218,7 @@ const contaboAPI = async (mangaName, mime, route, directory) => {
 const deleteManga = async (req, res) => {
   try {
     const id = req.params.id;
-    const response = await Manga.deleteOne({id: id});
+    const response = await Manga.deleteOne({ id: id });
     res.status(StatusCodes.OK).json({
       status: true,
       content: {
@@ -228,18 +237,117 @@ const deleteManga = async (req, res) => {
 }
 
 
-const updateManga = async (req,res) => {
+const updateManga = async (req, res) => {
   try {
-    const id = req.params.id;
-    
-    res.status(StatusCodes.OK).json({
-      status: true,
-      content: {
-        data: response,
-      }
+    console.log(req.body);
+    const inputJson = req.body;
+    var outputJson = {
+      id: "",
+      mdex_id: "",
+      state: "",
+      badge: "",
+      title: {
+        en: "",
+        jp: "",
+      },
+      altTitles: {
+        en: "",
+        jp: ""
+      },
+      description: { en: "" },
+      isLocked: false,
+      originalLanguage: "",
+      lastVolume: "",
+      lastChapter: "",
+      publicationDemographic: "",
+      status: "",
+      year: "",
+      contentRating: "",
+      genre: [],
+      author: [],
+      artist: [],
+      keywords: [],
+      chapterNumbersResetOnNewVolume: false,
+      createdAt: "",
+      updatedAt: "",
+      latestUploadedChapter: 0,
+      relationships: ["",],
+      type: "",
+      views: 0,
+      rating: 0,
+      follows: 0,
+      poster: {
+        original: "",
+        thumb: ""
+      },
+      slug: "",
+    };
+    outputJson.id = inputJson.id;
+    outputJson.mdex_id = "NULL";
+    outputJson.title.en = inputJson.titleEn || "";
+    outputJson.title.jp = inputJson.titleJp || "";
+    outputJson.altTitles.en = inputJson.altTitle || "";
+    outputJson.description.en = inputJson.description;
+    outputJson.isLocked = Boolean(inputJson.isLocked);
+    outputJson.originalLanguage = inputJson.originalLanguage;
+    outputJson.publicationDemographic = inputJson.publicationDemographic;
+    outputJson.lastVolume = inputJson.lastVolume;
+    outputJson.lastChapter = inputJson.lastChapter;
+    outputJson.status = inputJson.status || "";
+    outputJson.year = inputJson.year || "";
+    outputJson.contentRating = inputJson.contentRating || "";
+    outputJson.author = JSON.parse(inputJson.author);
+    outputJson.artist = JSON.parse(inputJson.artist);
+    outputJson.genre = JSON.parse(inputJson.genres);
+    outputJson.keywords = JSON.parse(inputJson.keywords);
+    outputJson.chapterNumbersResetOnNewVolume = inputJson.chapterNumbersResetOnNewVolume || false;
+    outputJson.createdAt = inputJson.createdAt || "";
+    outputJson.updatedAt = inputJson.updatedAt || "";
+    outputJson.latestUploadedChapter = inputJson.latestUploadedChapter;
+    outputJson.relationships = [];//will add
+    outputJson.type = inputJson.type || "";
+    outputJson.views = inputJson.views || 0;
+    outputJson.rating = inputJson.rating || 0;
+    outputJson.follows = inputJson.follows || 0;
+    outputJson.postAt = inputJson.postAt;
+    outputJson.state = inputJson.state;
+    outputJson.badge = inputJson.badge;
+    outputJson.slug = outputJson.title.en
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    contaboUpload(outputJson.id);
+    const contaboApi = config.get('CONTABO_API');
+    outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
+    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.jpg`;
+
+    Manga.findOneAndUpdate(
+      {id:outputJson.id},
+      {$set : outputJson},
+      {new : true}
+    )
+    .then((updatedManga)=>{
+      res.status(StatusCodes.OK).json({
+        status: true,
+        content: {
+          data: updatedManga,
+        }
+      });
+    })
+    .catch((error)=>{
+      console.log("inner ", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        content: {
+          error: error,
+        }
+      });
     });
   } catch (error) {
-    console.log(error);
+    console.log("outer ", error);
+    //console.log(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       content: {
@@ -250,27 +358,25 @@ const updateManga = async (req,res) => {
 }
 
 
-const getMangaById = async (req,res)=>{
-  try {
-    const id = req.params.id;
-    const response = Manga.findOne({id:id});
-    console.log(response);
-    res.send({data:response});
-    res.status(StatusCodes.OK).json({
-      status: true,
-      content: {
-        data: response,
-      }
+const getMangaById = async (req, res) => {
+  const id = req.params.id;
+  Manga.findOne({ id: id })
+    .then((model) => {
+      res.status(StatusCodes.OK).json({
+        status: true,
+        content: {
+          data: model,
+        }
+      })
+    })
+    .catch((error) => {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        content: {
+          error: error,
+        }
+      });
     });
-  } catch (error) {
-    console.log(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      status: false,
-      content: {
-        error: error,
-      }
-    });
-  }
 }
 
 

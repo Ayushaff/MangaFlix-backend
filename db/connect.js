@@ -6,7 +6,7 @@ const config = require('config');
 const connectDB = () => {
     const {atlas} = config.get("mongo");
     //const uri = `mongodb+srv://${atlas.user}:${atlas.password}@${atlas.cluster}/${atlas.database}`;
-    const uri = `mongodb://127.0.0.1:27017/`;
+    const uri = `mongodb://0.0.0.0:27017/`;
     return mongoose.connect(uri);
 };
 
