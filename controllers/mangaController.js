@@ -12,21 +12,45 @@ const axios = require('axios')
 const getAll = async (req, res) => {
   try {
     const pageSize = req.query.limit;
+    const searchTerm = req.query.search;
     var query;
+
+    //filter selection
     if(req.query.filter === "PUBLISHED"){
-      query = Manga.find({state : "publish"});
+      query = Manga.find({
+        $and : [
+          {state : "publish"},
+          {"title.en" : {$regex: searchTerm,$options :'i'}}
+        ]
+      });
     }else if(req.query.filter === "DRAFT"){
-      query = Manga.find({state : "draft"});
+      query = Manga.find({
+        $and : [
+          {state : "draft"},
+          {"title.en" : {$regex: searchTerm,$options :'i'}}
+        ]
+      });
     }else if(req.query.filter === "TRASH"){
-      query = Manga.find({state : "trash"});
+      query = Manga.find({
+        $and : [
+          {state : "trash"},
+          {"title.en" : {$regex: searchTerm,$options :'i'}}
+        ]
+      });
     }else{
-      query = Manga.find();
+      query = Manga.find({
+        $and : [
+          {"title.en" : {$regex: searchTerm,$options :'i'}}
+        ]
+      });
     }
 
+    //pagination
     const apifeatures = new ApiFeatures(query, req.query)
       .pagination(pageSize);
+
+
     let mangas = await apifeatures.query.lean();
-    //console.log(mangas);
     res.status(StatusCodes.OK).json({
       status: true,
       content: {
@@ -239,7 +263,7 @@ const deleteManga = async (req, res) => {
 
 const updateManga = async (req, res) => {
   try {
-    console.log(req.body);
+    console.log("update",req.body);
     const inputJson = req.body;
     var outputJson = {
       id: "",

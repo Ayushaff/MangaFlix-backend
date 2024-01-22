@@ -31,7 +31,7 @@ const {
 
 router.route('/').get(getAll);
 router.route('/').post(upload.any(),addManga);
-router.route('/').put(updateManga);
+router.route('/').put(upload.any(),updateManga);
 router.route('/:id').get(getMangaById);
 router.route('/:id').delete(deleteManga);
 

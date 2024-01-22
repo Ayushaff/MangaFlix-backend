@@ -5,8 +5,8 @@ const genreSchema = new mongoose.Schema({
   name: { type: String, required: true ,unique : true},
   description: { type: String, required: false },
   important: { type: Boolean, required: true },
-  createdAt: { type: Date, required: false },
-  updatedAt: { type: Date, required: false },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date, required: true },
 });
 
 const Genre = mongoose.model('Genre', genreSchema);
