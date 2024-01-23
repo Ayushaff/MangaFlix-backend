@@ -46,6 +46,8 @@ const coverRouter = require("./routes/coverRouter");
 const converterRouter = require("./routes/converterRouter");
 const genreRouter = require("./routes/genreRouter.js");
 const chapterRouter = require("./routes/chapterRouter.js");
+const workerRouter = require("./routes/workerRouter.js");
+//const bloggerRouter = require("./routes/bloggerRouter.js");
 
 //routing the paths to route imports
 app.use("/v1/auth", userRouter);
@@ -57,6 +59,8 @@ app.use("/v1/cover", coverRouter);
 app.use("/v1/convert", converterRouter);
 app.use("/v1/genre", genreRouter);
 app.use("/v1/chapter", chapterRouter);
+app.use("/v1/worker", workerRouter);
+//app.use("/v1/blogger", bloggerRouter);
 app.use(errorHandlerMiddleware);
 app.use(notFound);
 

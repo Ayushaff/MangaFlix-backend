@@ -1,6 +1,6 @@
 const Chapter = require("../models/chapterModel");
 const { StatusCodes } = require("http-status-codes");
-
+const { v4: uuidv4 } = require('uuid');
 
 const getByMangaId = async (req, res) => {
     try{
@@ -44,8 +44,9 @@ const getById = async (req, res) => {
 
 const addChapter = async (req, res) => {
     try {
-        console.log(req.body);
+        //console.log(req.body);
         const outputJson={
+            chapterId : uuidv4(),
             mangaId: req.body.mangaId,
             title: req.body.title,
             volume : req.body.volume,
@@ -57,7 +58,7 @@ const addChapter = async (req, res) => {
             ],
             pageCount: req.body.pageCount,
             version: req.body.version,
-            publishedAt: req.body.publishedAt,
+            publishedAt: req.body.publishAt,
             createdAt: req.body.createdAt,
             updatedAt: req.body.updatedAt,
             isActive: req.body.isActive,
@@ -85,9 +86,33 @@ const addChapter = async (req, res) => {
 }
 
 
+const deleteChapter = async (req,res)=>{
+
+    const id = req.params.id;
+    
+    try {
+        const response = await Chapter.deleteOne({chapterId:id});
+        res.status(StatusCodes.OK).json({
+            status: true,
+            content: {
+                data: response,
+            }
+        });
+    } catch (error) {
+        console.log("error\n",error);
+        res.status(StatusCodes.OK).json({
+            status: false,
+            content: {
+                error: error,
+            }
+        });
+    }
+}
+
 
 module.exports = {
     getById,
     getByMangaId,
-    addChapter
+    addChapter,
+    deleteChapter,
 }

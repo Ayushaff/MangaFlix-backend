@@ -6,6 +6,7 @@ const {
     getById,
     getByMangaId,
     addChapter,
+    deleteChapter,
 } = require('../controllers/chapterController');
 const {
     authMiddleware
@@ -17,6 +18,7 @@ const {
 router.route('/:id').get(getById);
 router.route('/mangaId/:id').get(getByMangaId);
 router.route('/').post(addChapter);
+router.route('/:id').delete(deleteChapter);
 
 
 module.exports = router;
