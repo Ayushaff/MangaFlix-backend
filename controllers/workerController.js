@@ -65,7 +65,7 @@ const getByUrl = async (req, res) => {
 
 // Add a new worker
 const addWorker = async (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     const worker = req.body;
     try {
         if(worker.workerUrl.trim().length == 0) {
@@ -94,10 +94,35 @@ const addWorker = async (req, res) => {
 };
 
 
+const getRandomWorker = async (req,res)=>{
+    try {
+        console.log("yo");
+        const response = await Worker.findOne({}).sort({"bytesUsed":1});
+        
+        
+        // res.status(StatusCodes.OK).json({
+        //     status: true,
+        //     content: {
+        //         data: response,
+        //     }
+        // });
+        return response;
+        
+    } catch (error) {
+        console.log(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            status: false,
+            content: {
+                error: error,
+            }
+        });
+    }
+}
+
 module.exports = {
     getAll,
     getById,
     getByUrl,
     addWorker,
-
+    getRandomWorker
 };

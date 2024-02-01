@@ -21,7 +21,10 @@ const chapterModelSchema = new mongoose.Schema({
   chapterNumber: { type: String },
   summary: { type: String },
   language: { type: String },
-  pages: [pageSchema],
+  pages: {
+    server1: { type: [String] },
+    server2: { type: [String] },
+  },
   pageCount: { type: Number },
   version: { type: Number },
   publishedAt: { type: Date },

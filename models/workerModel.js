@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const workerModelSchema = new mongoose.Schema({
-    workerUrl: { type: String, required: true },
+    workerUrl: { type: String, required: true, unique : true },
     status: { type: Boolean, required: true },
     timesUsed: { type: Number, default: 0 },
     bytesUsed: { type: Number, default: 0 },
