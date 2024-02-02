@@ -96,10 +96,7 @@ const addWorker = async (req, res) => {
 
 const getRandomWorker = async (req,res)=>{
     try {
-        console.log("yo");
-        const response = await Worker.findOne({}).sort({"bytesUsed":1});
-        
-        
+        const response = await Worker.findOne({"status":true}).sort({"bytesUsed":1,});
         // res.status(StatusCodes.OK).json({
         //     status: true,
         //     content: {
