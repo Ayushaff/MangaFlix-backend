@@ -47,7 +47,7 @@ const getById = async (req, res) => {
 }
 
 
-
+// function to add local loaded images to worker throught post url
 const addInWorker = async (url, req) => {
     return new Promise((resolve, reject) => {
         const directoryPath = `controllers/workerTemp/${req.body.chapterId}`;
@@ -62,6 +62,7 @@ const addInWorker = async (url, req) => {
                     //console.log('Files in the directory:');
                     //console.log(fileNames);
                     fileNames.sort();
+                    console.log(fileNames);
                     const workerImageUrls = [];
                     for (const fileName of fileNames) {
                         const formData = new FormData();
@@ -98,7 +99,7 @@ const addInWorker = async (url, req) => {
 };
 
 
-
+//add chapter into mongo (takes average )
 const addChapter = async (req, res) => {
     try {
 
@@ -113,7 +114,6 @@ const addChapter = async (req, res) => {
             });
         }
         const workerUrls = await addInWorker(`${worker.workerUrl}/insert`, req);
-        workerUrls.sort();
         //console.log(workerUrls);
         //output model
         const outputJson = {
@@ -125,8 +125,8 @@ const addChapter = async (req, res) => {
             summary: req.body.summary,
             language: req.body.language,
             pages: {
-                server1:workerUrls,
-                server2:[]
+                server1:workerUrls,//worker server
+                server2:[], //blogger server
             },
             pageCount: req.body.pageCount,
             version: req.body.version,
