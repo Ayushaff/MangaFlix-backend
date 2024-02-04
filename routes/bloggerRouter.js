@@ -5,13 +5,15 @@ const {
     addBlogger,
     getAllBlogger,
     getBloggerById,
-    deleteBlogger
+    deleteBlogger,
+    editBlogger
 } = require('../controllers/bloggerController');
 
 router.route('/').get(getAllBlogger);
 router.route('/').post(addBlogger);
 router.route('/:id').get(getBloggerById);
 router.route('/:id').delete(deleteBlogger);
+router.route('/:id').put(editBlogger);
 
 
 module.exports = router;
