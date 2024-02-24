@@ -6,7 +6,10 @@ const router = express.Router();
 const {
     signInUser,
     signUpUser,
-    showUser,
+    deleteUser,
+    getAllUsers,
+    updateUser,
+    getById,
 } = require('../controllers/userController');
 const {
     authMiddleware,
@@ -15,8 +18,11 @@ const {
 //routing the paths to controllers
 router.route('/signin').post(signInUser);//login
 router.route('/signup').post(signUpUser);
-router.route('/user/:id').get(showUser);
-router.route('/me').get(authMiddleware, showUser);
+router.route('/user').get(authMiddleware,getAllUsers);
+router.route('/user/:id').get(authMiddleware,getById);
+router.route('/user/:id').delete(authMiddleware,deleteUser);
+router.route('/user/:id').put(authMiddleware,updateUser);
+router.route('/me').get(authMiddleware, getById);
 
 //exports
 module.exports = router;

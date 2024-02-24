@@ -25,11 +25,18 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please enter your password"],
     minlength: [6, "Password should be greater than 6 characters"],
   },
-  role:{
-    type: mongoose.Schema.ObjectId,
-    ref: "Role",
-    select: false,
-    required : [true, "Please mention role of the user."]
+  role: {
+    type: String,
+    required: true,
+    minlength: [2, 'Must be greater than 2'],
+    enum: ['ADMIN', 'MOD', 'USER']
+  },
+  bookmarks : {
+    type : [String],
+
+  },
+  history : {
+    type : [String],
   }
 }, {
   timestamps: true,
@@ -40,7 +47,9 @@ UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
+  console.log("pre hash",this.password);
   this.password = await bcrypt.hash(this.password, 10);
+  console.log("post hash",this.password);
 });
 
 //Generate JWT token for the user
@@ -53,6 +62,7 @@ UserSchema.methods.createJWT = function () {
 
 UserSchema.methods.isPasswordCorrect = async function (inputPassword) {
   const isPasswordMatch = await bcrypt.compare(inputPassword, this.password);
+  console.log("is password or not : ",inputPassword,this.password);
   return isPasswordMatch;
 };
 

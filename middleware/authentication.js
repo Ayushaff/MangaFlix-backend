@@ -6,14 +6,15 @@ const config = require('config');
 
 
 const authMiddleware = async (req, res, next) => {
-  const  access_token  = req.body.auth_token;
+  const  access_token  = req.headers['x-auth-token'];
+  console.log(access_token);
   if (!access_token) {
     throw new Unauthorized(
       `No token to access this route , please sign in to access`
     );
   }
   const decodedData = jwt.verify(access_token, config.get("JWT_SECRET_KEY"));
-
+  console.log(decodedData);
   req.user = await User.findById(decodedData.id);
   next();
 };

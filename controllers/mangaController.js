@@ -13,8 +13,9 @@ const getAll = async (req, res) => {
   try {
     const pageSize = req.query.limit;
     const searchTerm = req.query.search;
+    const suggestion = req.query.suggestion || "ALL";
     var query;
-
+    console.log("thisone");
     //filter selection
     if(req.query.filter === "PUBLISHED"){
       query = Manga.find({
@@ -152,7 +153,7 @@ const addManga = async (req, res) => {
     contaboUpload(outputJson.slug);
     const contaboApi = config.get('CONTABO_API');
     outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
-    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.jpg`;
+    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.webp`;
 
     const manga = await Manga.create(outputJson);
     res.status(StatusCodes.OK).json({
@@ -185,17 +186,18 @@ var contaboUpload = (slug) => {
         } else {
           // console.log(info);
           var contabo_resp = await contaboAPI(slug, "jpg", "poster", "public/imagefile.jpg");
-          if (contabo_resp.status == 200) {
-            console.log("jpg poster placed");
-          } else {
-            console.log("jpg poster error");
-          }
+          // if (contabo_resp.status == 200) {
+          //   console.log("jpg poster placed");
+          // } else {
+          //   console.log("jpg poster error");
+          // }
           var contabo_resp2 = await contaboAPI(slug, "webp", "thumb", "public/outputfile.webp");
-          if (contabo_resp2.status == 200) {
-            console.log("webp thumb placed");
-          } else {
+          // if (contabo_resp2.status == 200) {
+          //   console.log("webp thumb placed");
+          // } else {
+          //
+          // }
 
-          }
         }
       });
   } catch (error) {
@@ -345,7 +347,7 @@ const updateManga = async (req, res) => {
     contaboUpload(outputJson.id);
     const contaboApi = config.get('CONTABO_API');
     outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
-    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.jpg`;
+    outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.webp`;
 
     Manga.findOneAndUpdate(
       {id:outputJson.id},

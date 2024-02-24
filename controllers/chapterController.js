@@ -29,7 +29,8 @@ const getByMangaId = async (req, res) => {
 const getById = async (req, res) => {
     try {
         const id = req.params.id;
-        const chapter = await Chapter.find({ id: id });
+        console.log("***********************",id);
+        const chapter = await Chapter.findOne({ "chapterId": id });
         res.status(StatusCodes.OK).json({
             status: true,
             content: {
@@ -223,7 +224,7 @@ const addInBlogger = async (page_uri,cookie, req) => {
                         //console.log("temp-array:\n", temp_array);
                         response.push(temp_array.original);
                     }
-
+                    
                     resolve(response);
 
                 } catch (error) {
@@ -236,12 +237,18 @@ const addInBlogger = async (page_uri,cookie, req) => {
 }
 
 
-const processImages = async (page_uri,cookie,url, req) => {
+const processImages = async (page_uri, cookie, url, req) => {
     try {
-        const [workerUrls, bloggerUrls] = await Promise.all([addInWorker(url, req), addInBlogger(page_uri,cookie, req)])
+        const [workerUrls, bloggerUrls] = await Promise.all([addInWorker(url, req), addInBlogger(page_uri, cookie, req)]);
+        const directoryPath = `controllers/workerTemp/${req.body.chapterId}`;
+        fs.rmdir(directoryPath, { recursive: true }, (err) => {
+            if (err) {
+                console.error('Error while deleting directory:', err);
+            }
+        });
         return {
-            workerUrls : workerUrls,
-            bloggerUrls : bloggerUrls
+            workerUrls: workerUrls,
+            bloggerUrls: bloggerUrls
         };
     } catch (error) {
         console.log(error);
@@ -263,11 +270,11 @@ const addChapter = async (req, res) => {
             });
         }
         //const workerUrls = await addInWorker(`${worker.workerUrl}/insert`, req);
-        const cookie =  "_ga=GA1.2.1961785975.1690523639; HSID=AAT8oLeVG9vwUr2Jy; SSID=AyNISzBi-PhJQO3HC; APISID=rB5CSi3unUW8iNGY/AOekKYs_XgO-CdB5T; SAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; __Secure-1PAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; __Secure-3PAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; SID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBbr0uSVt3fXJEApXcPLyzRgw.; __Secure-1PSID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBbGGFXo_RCo1TTLr-Ro9U8Nw.; __Secure-3PSID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBb1tSSbCmWSMDrHQenUzZhrQ.; OTZ=7374702_48_48_123900_44_436380; NID=511=crWk-IahkDkftvH_msBGkwu0nS7O8Zf0yyzxujPrWpZ4LUiBw_hMMU5K8UsPdiEmV7I2j8vYY9zarK55M1MnjCxCPO4clAoz2FjywBUOuC7TvLmriL1H3eEVzUtx1ZP9UcwFs6NiTZdH4elDuG-hcC17uru5tUYc6ZpaOipXpxozeigDvs1sgogd1LpOfp1l";
-        const page_uri =  "https://www.blogger.com/blog/post/edit/1752759376017980559/3236587965745307076";
-        const {workerUrls,bloggerUrls} = await processImages(page_uri,cookie,`${worker.workerUrl}/insert`,req);
-        console.log("workerURLs :",workerUrls);
-        console.log("bloggerURLs :",bloggerUrls);
+        const cookie = "_ga=GA1.2.1961785975.1690523639; HSID=AAT8oLeVG9vwUr2Jy; SSID=AyNISzBi-PhJQO3HC; APISID=rB5CSi3unUW8iNGY/AOekKYs_XgO-CdB5T; SAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; __Secure-1PAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; __Secure-3PAPISID=uxUAU-0v-fV3QnDE/A5WOr-9cLCOJUi-ZB; SID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBbr0uSVt3fXJEApXcPLyzRgw.; __Secure-1PSID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBbGGFXo_RCo1TTLr-Ro9U8Nw.; __Secure-3PSID=fAhtQgQ-4TuuCWscygK3tNo_wx0UppMbbUDfSgwMrqUPnSBb1tSSbCmWSMDrHQenUzZhrQ.; OTZ=7374702_48_48_123900_44_436380; NID=511=crWk-IahkDkftvH_msBGkwu0nS7O8Zf0yyzxujPrWpZ4LUiBw_hMMU5K8UsPdiEmV7I2j8vYY9zarK55M1MnjCxCPO4clAoz2FjywBUOuC7TvLmriL1H3eEVzUtx1ZP9UcwFs6NiTZdH4elDuG-hcC17uru5tUYc6ZpaOipXpxozeigDvs1sgogd1LpOfp1l";
+        const page_uri = "https://www.blogger.com/blog/post/edit/1752759376017980559/3236587965745307076";
+        const { workerUrls, bloggerUrls } = await processImages(page_uri, cookie, `${worker.workerUrl}/insert`, req);
+        console.log("workerURLs :", workerUrls);
+        console.log("bloggerURLs :", bloggerUrls);
         //output model
         const outputJson = {
             chapterId: req.body.chapterId,

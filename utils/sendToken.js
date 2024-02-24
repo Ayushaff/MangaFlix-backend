@@ -27,7 +27,7 @@ const sendToken = (user, statusCode, res) => {
       }
     });
   } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({
+    res.status(StatusCodes.UNAUTHORIZED).json({
       status: false,
       content: {
         error: error

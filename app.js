@@ -48,9 +48,11 @@ const genreRouter = require("./routes/genreRouter.js");
 const chapterRouter = require("./routes/chapterRouter.js");
 const workerRouter = require("./routes/workerRouter.js");
 const bloggerRouter = require("./routes/bloggerRouter.js");
+const { authMiddleware } = require("./middleware/authentication.js");
 
 //routing the paths to route imports
 app.use("/v1/auth", userRouter);
+
 app.use("/v1/role", roleRouter);
 app.use("/v1/member", memberRouter);
 app.use("/v1/community", communityRouter);

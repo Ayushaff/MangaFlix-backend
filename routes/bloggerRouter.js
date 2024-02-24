@@ -8,12 +8,13 @@ const {
     deleteBlogger,
     editBlogger
 } = require('../controllers/bloggerController');
+const { authMiddleware } = require('../middleware/authentication');
 
-router.route('/').get(getAllBlogger);
-router.route('/').post(addBlogger);
-router.route('/:id').get(getBloggerById);
-router.route('/:id').delete(deleteBlogger);
-router.route('/:id').put(editBlogger);
+router.route('/').get(authMiddleware,getAllBlogger);
+router.route('/').post(authMiddleware,addBlogger);
+router.route('/:id').get(authMiddleware,getBloggerById);
+router.route('/:id').delete(authMiddleware,deleteBlogger);
+router.route('/:id').put(authMiddleware,editBlogger);
 
 
 module.exports = router;

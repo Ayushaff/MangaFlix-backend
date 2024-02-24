@@ -34,8 +34,8 @@ const addGenre = async (req, res) => {
 const getAllGenre = async (req, res) => {
     try {
         console.log(req.query);
-        const pageSize = req.query.limit;
-        const searchTerm = req.query.search;
+        const pageSize = req.query.limit || 0;
+        const searchTerm = req.query.search || "";
 
         const query = Genre.find({
             $and: [
