@@ -9,6 +9,6 @@ const c = require('config');
 const { authMiddleware } = require('../middleware/authentication');
 
 
-router.route('/manga').post(authMiddleware,mangaConversion);
+router.route('/mangadex').post(mangaConversion);
 
 module.exports = router;

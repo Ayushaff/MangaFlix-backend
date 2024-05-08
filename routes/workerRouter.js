@@ -16,10 +16,12 @@ const {
 
 //upload.fields([{name:'poster.original',maxCount : 1}]),
 
-router.route('/').get(authMiddleware,getAll);
-router.route('/:id').get(authMiddleware,);
-router.route('/url/:url').get(authMiddleware,getByUrl);
-router.route('/').post(authMiddleware,addWorker);
-router.route('/get/random').get(authMiddleware,getRandomWorker);
+
+//need to add authentication
+router.route('/').get(getAll);
+// router.route('/:id').get(,);
+router.route('/url/:url').get(getByUrl);
+router.route('/').post(addWorker);
+router.route('/get/random').get(getRandomWorker);
 
 module.exports = router;

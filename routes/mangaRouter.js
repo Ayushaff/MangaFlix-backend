@@ -20,7 +20,8 @@ const {
     addManga,
     deleteManga,
     getMangaById,
-    updateManga
+    updateManga,
+    getMangaBySlug
 } = require('../controllers/mangaController');
 const {
     authMiddleware
@@ -34,6 +35,7 @@ router.route('/').post(upload.any(),authMiddleware,addManga);
 router.route('/').put(upload.any(),authMiddleware,updateManga);
 router.route('/:id').get(getMangaById);
 router.route('/:id').delete(authMiddleware,deleteManga);
+router.route('/slug/:slug').get(getMangaBySlug);
 
 
 module.exports = router;

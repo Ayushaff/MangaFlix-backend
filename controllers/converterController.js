@@ -93,12 +93,13 @@ const mangaConversion = async (req, res) => {
     .filter((relation) => relation.type === "cover_art")
     .map((poster) => poster.attributes.fileName);
   var poster_uri = `https://uploads.mangadex.org/covers/${outputJson.mdex_id}/${poster_link}`;
+  console.log(poster_uri);
 
   var destination = `controllers/temp/tempfile.jpg`;
   var scrap_poster = (url, destination) => {
     request(url)
       .pipe(fs.createWriteStream(destination))
-      .on("close", () => {
+      .on("finish", () => {
         sharp('controllers/temp/tempfile.jpg')
           .webp()
           .resize(200, 300)

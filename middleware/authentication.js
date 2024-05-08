@@ -9,6 +9,7 @@ const authMiddleware = async (req, res, next) => {
   const  access_token  = req.headers['x-auth-token'];
   console.log(access_token);
   if (!access_token) {
+    console.log("whatever");
     throw new Unauthorized(
       `No token to access this route , please sign in to access`
     );
@@ -16,6 +17,7 @@ const authMiddleware = async (req, res, next) => {
   const decodedData = jwt.verify(access_token, config.get("JWT_SECRET_KEY"));
   console.log(decodedData);
   req.user = await User.findById(decodedData.id);
+  console.log("auth middleware issue");
   next();
 };
 

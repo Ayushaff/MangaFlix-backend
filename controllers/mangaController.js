@@ -21,14 +21,14 @@ const getAll = async (req, res) => {
       query = Manga.find({
         $and : [
           {state : "publish"},
-          {"title.en" : {$regex: searchTerm,$options :'i'}}
+          {"title.en" : {$regex: searchTerm,$options :'i'}},
         ]
       });
     }else if(req.query.filter === "DRAFT"){
       query = Manga.find({
         $and : [
           {state : "draft"},
-          {"title.en" : {$regex: searchTerm,$options :'i'}}
+          {"title.en" : {$regex: searchTerm,$options :'i'}},
         ]
       });
     }else if(req.query.filter === "TRASH"){
@@ -72,6 +72,7 @@ const getAll = async (req, res) => {
 //add manga (POST)
 const addManga = async (req, res) => {
   try {
+    console.log("add manga");
     const inputJson = req.body;
     var outputJson = {
       id: "",
@@ -232,6 +233,7 @@ const contaboAPI = async (mangaName, mime, route, directory) => {
     response = await axios.put(url, imageBuffer, {
       headers: signedRequest.headers,
     });
+    console.log(response);
 
     return response;
   } catch (err) {
@@ -344,7 +346,7 @@ const updateManga = async (req, res) => {
       .replace(/[^\w\s-]/g, '')
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
-    contaboUpload(outputJson.id);
+    contaboUpload(outputJson.slug);
     const contaboApi = config.get('CONTABO_API');
     outputJson.poster.original = `${contaboApi}/${outputJson.slug}/poster/${outputJson.slug}.jpg`;
     outputJson.poster.thumb = `${contaboApi}/${outputJson.slug}/thumb/${outputJson.slug}.webp`;
@@ -406,10 +408,32 @@ const getMangaById = async (req, res) => {
 }
 
 
+const getMangaBySlug = async (req,res) => {
+  try{
+    console.log("hello");
+    const slug = req.params.slug;
+    const resp = await Manga.findOne({slug : slug});
+    res.status(StatusCodes.OK).json({
+      status: true,
+      content: {
+        data: resp,
+      }
+    });
+  }catch(e){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      content: {
+        error: error.message,
+      }
+    });
+  }
+}
+
 module.exports = {
   getAll,
   addManga,
   deleteManga,
   getMangaById,
-  updateManga
+  updateManga,
+  getMangaBySlug
 }

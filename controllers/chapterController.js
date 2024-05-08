@@ -5,22 +5,41 @@ const fs = require('fs');
 const { getRandomWorker } = require("./workerController");
 const axios = require('axios');
 const FormData = require('form-data');
+const ApiFeatures = require("../utils/api-features");
 
 const getByMangaId = async (req, res) => {
     try {
-        const mangaId = req.params.id;
-        const allChapters = await Chapter.find({ mangaId: mangaId });
+        const mangaId = req.query.id;
+        const pageSize = req.query.limit || 10;
+        const searchTerm = req.query.search || "";
+        var query;
+
+        // console.log(mangaId,pageSize);
+        
+        query = Chapter.find({
+            $and: [
+                { "chapterNumber": { $regex: searchTerm, $options: 'i' }, "mangaId" : mangaId }
+            ]
+        });
+
+        const apifeatures = new ApiFeatures(query, req.query)
+            .pagination(pageSize);
+
+        let chapters = await apifeatures.query.lean();
+        
+        // console.log("--------0-0-0-0-0-0");
+        
         res.status(StatusCodes.OK).json({
             status: true,
             content: {
-                data: allChapters,
+                data: chapters,
             }
         });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: false,
             content: {
-                error: error,
+                error: error.message,
             }
         });
     }
@@ -29,7 +48,8 @@ const getByMangaId = async (req, res) => {
 const getById = async (req, res) => {
     try {
         const id = req.params.id;
-        console.log("***********************",id);
+        console.log("***********************", id);
+        
         const chapter = await Chapter.findOne({ "chapterId": id });
         res.status(StatusCodes.OK).json({
             status: true,
@@ -83,16 +103,16 @@ const addInWorker = async (url, req) => {
                         //console.log(response.data.imageUrl);
                         workerImageUrls.push(response.data.imageUrl);
                     }
-                    //console.log(workerImageUrls);
-                    // fs.rmdir(directoryPath, { recursive: true }, (err) => {
-                    //     if (err) {
-                    //         console.error('Error while deleting directory:', err);
-                    //     }
-                    // });
+                    console.log(workerImageUrls);
+                    fs.rmdir(directoryPath, { recursive: true }, (err) => {
+                        if (err) {
+                            console.error('Error while deleting directory:', err);
+                        }
+                    });
                     resolve(workerImageUrls);
                 } catch (error) {
-                    console.error('Error processing files:', error);
-                    reject(error);
+                    console.error('Error processing files in worker:', error);
+                    reject(error.message);
                 }
             }
         });
@@ -100,7 +120,7 @@ const addInWorker = async (url, req) => {
 }
 
 //
-const addInBlogger = async (page_uri,cookie, req) => {
+const addInBlogger = async (page_uri, cookie, req) => {
     return new Promise((resolve, reject) => {
         const directoryPath = `controllers/workerTemp/${req.body.chapterId}`;
         fs.readdir(directoryPath, async (err, files) => {
@@ -224,7 +244,7 @@ const addInBlogger = async (page_uri,cookie, req) => {
                         //console.log("temp-array:\n", temp_array);
                         response.push(temp_array.original);
                     }
-                    
+
                     resolve(response);
 
                 } catch (error) {
@@ -261,6 +281,9 @@ const addChapter = async (req, res) => {
 
         //worker logic
         const worker = await getRandomWorker();//worker with the most space avail
+        console.log("_--------------------");
+        console.log(worker);
+        console.log("_--------------------");
         if (worker.bytesUsed >= "800") {
             res.status(StatusCodes.NOT_FOUND).json({
                 status: false,

@@ -45,7 +45,7 @@ const {
 
 //upload.fields([{name:'poster.original',maxCount : 1}]),
 router.route('/:id').get(getById);
-router.route('/mangaId/:id').get(getByMangaId);
+router.route('/special/mangaId').get(getByMangaId);
 router.route('/').post(upload.any(), authMiddleware,addChapter);
 router.route('/:id').delete(authMiddleware,deleteChapter);
 
